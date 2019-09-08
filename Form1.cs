@@ -136,9 +136,9 @@ namespace hand_spoken_frontend
             start_layer2();
         }
 
-            panel2.Show();
         private void start_layer2()
         {
+            panel2.Show();
         }
 
         private void Button5_Click(object sender, EventArgs e)
