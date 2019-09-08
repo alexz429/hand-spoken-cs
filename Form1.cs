@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace hand_spoken_frontend
 {
     public partial class Form1 : Form
     {
-        private static string BACKEND_URL = "";
+        private static string BACKEND_URL = "http://10.251.83.44:8008";
         private static readonly HttpClient client = new HttpClient();
         static List<KeyValuePair<string, Image>> images = new List<KeyValuePair<string,Image>>();
         public Form1()
@@ -26,18 +27,18 @@ namespace hand_spoken_frontend
             panel1.Controls.Add(button3);
             panel1.Controls.Add(flowLayoutPanel);
             panel1.Controls.Add(pictureBox1);
-
+            panel2.Hide();
+            panel2.Controls.Add(button4);
+            panel2.Controls.Add(button5);
         }
 
         private void InitializeOpenFileDialog()
         {
             // Set the file dialog to filter for graphics files.
             this.openFileDialog1.Filter =
-                "Images (*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|" +
+                "Images (*.BMP;*.JEPG;*.GIF)|*.BMP;*.JPEG;*.GIF|" +
                 "All files (*.*)|*.*";
 
-            // Allow the user to select multiple images.
-            this.openFileDialog1.Multiselect = true;
             this.openFileDialog1.Title = "My Image Browser";
         }
 
@@ -75,6 +76,7 @@ namespace hand_spoken_frontend
 
         private void Button3_Click(object sender, EventArgs e)
         {
+            images.Clear();
             refreshPhotos();
         }
 
@@ -101,29 +103,53 @@ namespace hand_spoken_frontend
             }
         }
 
-        private async void startBuf1()
+        private async void delay()
         {
 
-            var values = new Dictionary<string, string>
+        }
+        private async void startBuf1()
+        {
+            Image image = images[0].Value;
+            string b64;
+            using (MemoryStream m = new MemoryStream())
             {
-            { "thing1", "hello" },
-            { "thing2", "world" }
-            };
+                image.Save(m, image.RawFormat);
+                byte[] imageBytes = m.ToArray();
+                b64 = Convert.ToBase64String(imageBytes);
+            }
+
+            Dictionary<string, string> values = new Dictionary<string, string>();
 
             var content = new FormUrlEncodedContent(values);
-
-            var response = await client.GetAsync("https://jsonplaceholder.typicode.com/todos/1");
             panel1.Hide();
             panel1.Dispose();
             Refresh();
             pictureBox2.Visible = true;
             pictureBox2.Show();
             Refresh();
-            var responseString = await response.Content.ReadAsStringAsync();
-            
-            
+            //var response = await client.PostAsync(BACKEND_URL, content);
+            //var responseString = await response.Content.ReadAsStringAsync();
+            System.Threading.Thread.Sleep(2000);
+            //Console.WriteLine(responseString);
+            pictureBox2.Hide();
+            pictureBox2.Dispose();
+            start_layer2();
         }
 
+            panel2.Show();
+        private void start_layer2()
+        {
+        }
 
+        private void Button5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Button6_Click(object sender, EventArgs e)
+        {
+            openFileDialog2.ShowDialog();
+            File.Open(openFileDialog2.FileName, FileMode.Open);
+        }
     }
 }
